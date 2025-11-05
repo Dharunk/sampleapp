@@ -1,10 +1,13 @@
 node {
 
-  deleteDir()
+    deleteDir()
 
-  def IMAGE_NAME = "sample-node-app"
-  def IMAGE_TAG = "${env.BUILD_NUMBER}"
-  def EMAIL_RECIPIENTS = "dharunkumarsk04@gmail.com"
+    def IMAGE_NAME = "sample-node-app"
+    def IMAGE_TAG = "${env.BUILD_NUMBER}"
+    def EMAIL_RECIPIENTS = "dharunkumarsk04@gmail.com"
+
+    def nodeHome = tool name: 'nodejs-18', type: 'nodejs'
+    env.PATH = "${nodeHome}/bin:${env.PATH}"
 
     stage('Checkout') {
       checkout scm
