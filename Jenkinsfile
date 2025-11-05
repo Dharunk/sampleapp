@@ -1,9 +1,10 @@
 node {
-  // ---- config ----
+
+  cleanWs()
+
   def IMAGE_NAME = "sample-node-app"
   def IMAGE_TAG = "${env.BUILD_NUMBER}"
   def EMAIL_RECIPIENTS = "dharunkumarsk04@gmail.com"/
-  // ------------------
 
     stage('Checkout') {
       checkout scm
