@@ -1,0 +1,29 @@
+{
+  "name": "sampleapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "test": "mocha --exit"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "mocha": "^10.8.2",
+    "supertest": "^6.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dharunk/sampleapp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Dharunk/sampleapp/issues"
+  },
+  "homepage": "https://github.com/Dharunk/sampleapp#readme"
+}
