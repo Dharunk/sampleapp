@@ -13,9 +13,11 @@ node {
 
     stage('Install & Test') {
     try {
-      sh 'node -v'
-      sh 'npm ci'
-      sh 'npm test'
+      docker.image('node:18').inside('-u root') {
+        sh 'node -v'
+        sh 'npm ci'
+        sh 'npm test'
+      }
     } catch (err) {
       currentBuild.result = 'FAILURE'
       throw err
