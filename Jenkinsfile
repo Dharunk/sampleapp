@@ -4,7 +4,7 @@ node {
 
     def IMAGE_NAME = "sample-node-app"
     def IMAGE_TAG = "${env.BUILD_NUMBER ?: 'local'}"
-    def EMAIL_RECIPIENTS = "dharunkumarsk04@gmail.com"
+    def EMAIL_RECIPIENTS = "dharunkumar.sivakumar@gmail.com"
 
     def nodeHome = tool name: 'nodejs-18', type: 'nodejs'
     env.PATH = "${nodeHome}/bin:${env.PATH}"
