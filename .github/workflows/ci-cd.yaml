@@ -10,24 +10,58 @@ env:
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
+  build-and-push:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU (optional multi-arch)
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }},${{ env.IMAGE_NAME }}:latest
+
   deploy:
+    name: Deploy to local kind (self-hosted runner)
     needs: build-and-push
     runs-on: [self-hosted, kind]
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Configure kubeconfig on runner (optional if runner already has kubeconfig)
+      - name: Show kubectl version (runner must have kubectl configured)
         run: |
-          mkdir -p $HOME/.kube
-          # If you prefer to use the existing kubeconfig on the runner, skip writing secrets here.
-          # echo "${{ secrets.KUBECONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
-
-      - name: Update manifest image
-        run: |
-          sed -i "s|IMAGE_PLACEHOLDER|${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}|g" ops/deployment.yaml
+          kubectl version --client || true
+          kubectl config current-context || true
 
       - name: Apply manifests
         run: |
+          # Apply k8s manifests (ops/ directory) so resources exist (Service, Deployment, etc.)
           kubectl apply -f ops/
+
+      - name: Update Deployment image (no sed needed)
+        run: |
+          # Replace the deployment's container image using kubectl set image.
+          # Assumes Deployment name is 'sampleapp' and container name is 'sampleapp'.
+          # If your deployment/container names differ, change them.
+          kubectl set image deployment/sampleapp sampleapp=${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --record
           kubectl rollout status deployment/sampleapp -n default --timeout=120s
