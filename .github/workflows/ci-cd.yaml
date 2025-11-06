@@ -46,11 +46,18 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up kubectl
-        uses: actions-hub/kubectl@v3
-        with:
-          version: v1.32.0
-
+      - name: Install kubectl (manual)
+        run: |
+          set -e
+          KUBECTL_VERSION="v1.32.0"   # choose appropriate version
+          echo "Downloading kubectl $KUBECTL_VERSION"
+          curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+          curl -LO "https://dl.k8s.io/${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256"
+          echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/kubectl
+      - name: Show kubectl version
+        run: kubectl version --client --short
 
       - name: Configure kubeconfig
         # if you added KUBECONFIG_DATA secret: write it to file
