@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up QEMU (optional multi-arch)
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
@@ -28,17 +28,19 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push image
+      - name: Build and push multi-arch image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }},${{ env.IMAGE_NAME }}:latest
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            dharun05/sampleapp:${{ github.sha }}
+            dharun05/sampleapp:latest
 
   deploy:
     name: Deploy to local kind (self-hosted runner)
@@ -55,7 +57,6 @@ jobs:
 
       - name: Apply manifests
         run: |
-          # Apply k8s manifests (ops/ directory) so resources exist (Service, Deployment, etc.)
           kubectl apply -f ops/
 
       - name: Update Deployment image (no sed needed)
