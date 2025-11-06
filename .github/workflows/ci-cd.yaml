@@ -57,7 +57,7 @@ jobs:
           chmod +x kubectl
           sudo mv kubectl /usr/local/bin/kubectl
       - name: Show kubectl version
-        run: kubectl version --client --short
+        run: kubectl version --client
 
       - name: Configure kubeconfig
         # if you added KUBECONFIG_DATA secret: write it to file
