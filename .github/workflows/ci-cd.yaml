@@ -60,9 +60,15 @@ jobs:
         run: kubectl version --client
 
       - name: Configure kubeconfig
-        # if you added KUBECONFIG_DATA secret: write it to file
         run: |
+          mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+          echo "Wrote kubeconfig to $HOME/.kube/config"
+          
+      - name: Verify cluster access
+        run: kubectl cluster-info
+
       - name: Replace image tag in manifests
         run: |
           # update your k8s manifests to use the built image (adjust path if needed)
