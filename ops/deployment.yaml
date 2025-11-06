@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: sampleapp
-          image: sampleapp:v2
+          image: sampleapp:v3
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
