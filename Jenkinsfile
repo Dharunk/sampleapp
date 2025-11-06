@@ -36,7 +36,6 @@ node {
 
     stage('Deploy (run container)') {
       try {
-        // Use the same variable names consistently (IMAGE_NAME / IMAGE_TAG)
         def containerName = "${IMAGE_NAME}"
         sh """
           set -euxo pipefail
@@ -49,7 +48,6 @@ node {
           echo "Starting container ${containerName} from image ${IMAGE_NAME}:${IMAGE_TAG}..."
           docker run -d --name ${containerName} -p 3000:3000 ${IMAGE_NAME}:${IMAGE_TAG}
         """
-        // small wait and health-check (adjust URL/port for your environment)
         sh 'sleep 2'
         sh 'curl -f http://localhost:3000/health || (docker logs ${IMAGE_NAME} && exit 1)'
       } catch (err) {
@@ -59,12 +57,6 @@ node {
         error "Deploy failed: ${err}"
       }
     }
-
-  } catch (err) {
-    buildResult = 'FAILURE'
-    throw err
-
-  }
 
     try {
     currentBuild.result = currentBuild.result ?: 'SUCCESS'
