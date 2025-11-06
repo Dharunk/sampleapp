@@ -43,23 +43,22 @@ jobs:
             dharun05/sampleapp:latest
 
   deploy:
-    name: Deploy to local kind (self-hosted runner)
+    name: Deploy to local kind 
     needs: build-and-push
     runs-on: [self-hosted, kind]
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Show kubectl version (runner must have kubectl configured)
+      - name: Show kubectl version
         run: |
-          kubectl version --client || true
-          kubectl config current-context || true
+          kubectl version --client
 
       - name: Apply manifests
         run: |
           kubectl apply -f ops/
 
-      - name: Update Deployment image (no sed needed)
+      - name: Update Deployment image
         run: |
           kubectl set image deployment/sampleapp sampleapp=${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --record
           kubectl rollout status deployment/sampleapp -n default --timeout=120s
