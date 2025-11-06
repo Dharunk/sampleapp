@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 
 app.get('/', (req, res) => {
-  res.json({ status: 'ok', message: 'Hello from sample-app by Dharunkumar' });
+  res.json({ status: 'ok', message: 'Hi from sample-app by Dharunkumar' });
 });
 
 module.exports = app;
