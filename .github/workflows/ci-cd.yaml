@@ -60,8 +60,5 @@ jobs:
 
       - name: Update Deployment image (no sed needed)
         run: |
-          # Replace the deployment's container image using kubectl set image.
-          # Assumes Deployment name is 'sampleapp' and container name is 'sampleapp'.
-          # If your deployment/container names differ, change them.
           kubectl set image deployment/sampleapp sampleapp=${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --record
           kubectl rollout status deployment/sampleapp -n default --timeout=120s
