@@ -38,7 +38,6 @@ node {
       try {
         def containerName = "${IMAGE_NAME}"
         sh """
-          set -euxo pipefail
           # stop & remove existing container if present
           if docker ps -q -f name=${containerName} | grep -q .; then
             echo "Stopping existing container ${containerName}..."
@@ -49,11 +48,8 @@ node {
           docker run -d --name ${containerName} -p 3000:3000 ${IMAGE_NAME}:${IMAGE_TAG}
         """
         sh 'sleep 2'
-        // sh 'curl -f http://localhost:3000/health || (docker logs ${IMAGE_NAME} && exit 1)'
       } catch (err) {
         buildResult = 'FAILURE'
-        // best-effort cleanup, then fail
-        sh "docker rm -f ${IMAGE_NAME} || true"
         error "Deploy failed: ${err}"
       }
     }
